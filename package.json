@@ -1,0 +1,27 @@
+{
+  "name": "mws-restaurantapp",
+  "version": "1.0.0",
+  "description": "---\r #### _Three Stage Course Material Project - Restaurant Reviews_",
+  "main": "sw.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://gingersquirrel:Ginger12/@github.com/GingerSquirrel/MWS-RestaurantApp.git"
+  },
+  "author": "Harriet Lawrie",
+  "license": "ISC",
+  "devDependencies": {
+    "browser-sync": "^2.23.6",
+    "gulp": "^3.9.1",
+    "gulp-autoprefixer": "^5.0.0",
+    "gulp-watch-sass": "^1.4.1"
+  },
+  "dependencies": {
+    "gulp-sass": "^4.0.0"
+  },
+  "keywords": [
+    "PWA"
+  ]
+}

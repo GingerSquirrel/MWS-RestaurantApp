@@ -1,21 +1,19 @@
 
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').then(function(reg){
-    console.log('service worker registered');
-  }).catch(function(err){
-    console.log('service worker failed');
-});
-}
+//console.log("service worker disabled for idb, reenable when done");
+
+const nameOfCache = "restuarant-app-v1";
 
 self.addEventListener('install', function(event){
 
   event.waitUntil(
-    caches.open('restuarant-app-v1').then(function(cache){
+    caches.open(nameOfCache).then(function(cache){
       return cache.addAll([
     '/',
     'js/dbhelper.js',
     'js/main.js',
     'js/restaurant_info.js',
+    'js/idb.js',
+    'js/index.js',
     'css/styles.css',
     'img/',
     'restaurant.html',
@@ -28,12 +26,31 @@ self.addEventListener('install', function(event){
 });
 
 
+self.addEventListener('activate',  event => {
+  //Allows pages to be controlled immediately (no reload)
+  event.waitUntil(self.clients.claim());
+});
+
+
 self.addEventListener('fetch', function(event){
   event.respondWith(
-    caches.match(event.request, {ignoreSearch: true}).then(function(response){
-      if(response) return response;
-      return fetch(event.request);
+    // checks cache
+    caches.match(event.request, {ignoreSearch: true}).then(response => {
+      return response || fetch(event.request);
     })
-
   );
 });
+
+//network falling back to cache - might need for optimisation
+
+/*
+self.addEventListener('fetch', function(event){
+  event.respondWith(
+    // checks cache
+    fetch(event.request).catch(function(){
+      return caches.match(event.request, {ignoreSearch: true});
+    })
+  );
+});
+
+*/

@@ -205,8 +205,6 @@ createReviewSubmissionForm = () => {
   const formDiv = document.getElementById("add-review");
   const form = document.createElement('form');
 
-  const restaurantId = self.restaurant.id;
-
   /* fields here */
   const nameLabel = document.createElement('label');
   nameLabel.htmlFor = "name";
@@ -214,6 +212,7 @@ createReviewSubmissionForm = () => {
   form.append(nameLabel);
 
   const name = document.createElement('input');
+  name.id = "reviewFormName";
   name.type = "text";
   name.name = "name";
   form.append(name);
@@ -224,6 +223,7 @@ createReviewSubmissionForm = () => {
   form.append(labelRating);
 
   const rating = document.createElement('select');
+  rating.id = "reviewFormRating";
   rating.name = "rating";
   for(var i = 5; i > 0; i--){
     option = document.createElement('option');
@@ -238,6 +238,7 @@ createReviewSubmissionForm = () => {
   form.append(reviewLabel);
 
   const review = document.createElement('textarea');
+  review.id = "reviewFormReview";
   review.name = "review";
   form.append(review);
 
@@ -245,7 +246,6 @@ createReviewSubmissionForm = () => {
   button.innerHTML = "Submit Review";
   button.onclick = sendReview;
   form.append(button);
-
 
   formDiv.appendChild(form);
 }
@@ -255,6 +255,45 @@ function sendReview(event){
   event.preventDefault();
   console.log("send review function run");
 
+  /*
+  var dateString = "";
+  var today = new Date();
+  var months = ["January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+  dateString += months[today.getMonth()]+" ";
+  dateString += today.getDate()+", ";
+  dateString += today.getFullYear();
+  */
+
+
+
+  const name = document.getElementById("reviewFormName");
+  const rating = document.getElementById("reviewFormRating").value;
+  const review = document.getElementById("reviewFormReview");
+  //const date = dateString; // Not needed :(
+  const id = self.restaurant.id;
+
+  const reviewObj = {
+    restaurant_id: id,
+    name: name,
+    rating: rating,
+    comments: review
+  }
+
+  console.log("review obj" + reviewObj);
+
+  if(navigator.onLine){
+    fetch("http://localhost:1337/reviews/", {
+      method: 'POST',
+      body: JSON.stringify(reviewObj),
+      headers: {
+        'content-type': 'application/json'
+      }
+    }).then(response => {
+      response.json
+    }).catch((error) => {
+      console.log('error adding review: ' + error);
+    }).then(response => console.log('Review added'));
+  }
 
 }
 

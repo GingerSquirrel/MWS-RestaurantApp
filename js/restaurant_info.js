@@ -128,6 +128,7 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
     container.appendChild(noReviews);
+    createReviewSubmissionForm();
     return;
   }
   const ul = document.getElementById('reviews-list');
@@ -201,11 +202,52 @@ getParameterByName = (name, url) => {
 }
 
 createReviewSubmissionForm = () => {
-  const addForm = document.getElementById("add-review");
+  const formDiv = document.getElementById("add-review");
   const form = document.createElement('form');
 
-  /* add fields in here */
+  const restaurantId = self.restaurant.id;
 
+  /* fields here */
+  const nameLabel = document.createElement('label');
+  nameLabel.htmlFor = "name";
+  nameLabel.innerHTML = "Name";
+  form.append(nameLabel);
+
+  const name = document.createElement('input');
+  name.type = "text";
+  name.name = "name";
+  form.append(name);
+
+  const labelRating = document.createElement('label');
+  labelRating.htmlFor = "rating";
+  labelRating.innerHTML = "Star Rating";
+  form.append(labelRating);
+
+  const rating = document.createElement('select');
+  rating.name = "rating";
+  for(var i = 5; i > 0; i--){
+    option = document.createElement('option');
+    option.value = option.text = i;
+    rating.appendChild(option);
+  }
+  form.append(rating);
+
+  const reviewLabel = document.createElement('label');
+  reviewLabel.htmlFor = "review";
+  reviewLabel.innerHTML = "Review: ";
+  form.append(reviewLabel);
+
+  const review = document.createElement('textarea');
+  review.name = "review";
+  form.append(review);
+
+  const button = document.createElement('button');
+  button.innerHTML = "Submit Review";
+  button.onclick = sendReview;
+  form.append(button);
+
+
+  formDiv.appendChild(form);
 }
 
 

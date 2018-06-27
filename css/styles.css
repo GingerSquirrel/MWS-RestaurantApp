@@ -404,3 +404,13 @@ header {
 #add-review{
   padding:20px;
 }
+
+#add-review form label{
+  display: block;
+  margin-top: 15px;
+}
+
+#add-review form button{
+  display: inherit;
+  margin-top: 15px;
+}

@@ -436,3 +436,21 @@ header {
   letter-spacing: 2px;
   border-radius: 5px;
 }
+
+#fave-button{
+  display: inline-block;
+  padding:10px;
+  background-color: #ccc;
+  border-radius:10px;
+  margin:5px;
+
+  &:hover{
+    background-color: #ddd;
+    cursor: pointer;
+  }
+
+  img{
+    height:10px;
+  }
+
+}

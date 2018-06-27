@@ -32,11 +32,7 @@ window.initMap = () => {
     }
   });
 
-
 }
-
-
-
 
 
 /**
@@ -71,12 +67,22 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
+  const fave = document.getElementById('fave-button');
+  fave.setAttribute('data-toggle', restaurant.is_favorite);
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
-  image.alt = restaurant.alt;
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  //image.alt = restaurant.alt;
+
+    image.src = DBHelper.imageUrlForRestaurant(restaurant);
+
+  if(image.src.endsWith('/img/0.jpg')){
+    image.alt = "Awaiting photograph of restaurant";
+  }else{
+    image.alt = "A photograph of the Restaurant";
+  }
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -129,6 +135,8 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
     ul.appendChild(createReviewHTML(review));
   });
   container.appendChild(ul);
+
+  createReviewSubmissionForm();
 }
 
 /**
@@ -191,3 +199,20 @@ getParameterByName = (name, url) => {
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
 }
+
+createReviewSubmissionForm = () => {
+  const addForm = document.getElementById("add-review");
+  const form = document.createElement('form');
+
+  /* add fields in here */
+
+}
+
+
+function sendReview(event){
+  event.preventDefault();
+  console.log("send review function run");
+
+
+}
+

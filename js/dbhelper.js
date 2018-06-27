@@ -62,20 +62,16 @@ static saveToDatabase(messages){
 
 
 static getDataFromDatabase(){
-    return DBHelper.openDatabase().then(function(db){
-    if(!db){
-       return;
-       }
+  return DBHelper.openDatabase().then(function(db){
+  if(!db){
+     return;
+     }
 
-      var store = db.transaction('restaurant').objectStore('restaurant');
-      return store.getAll();
+    var store = db.transaction('restaurant').objectStore('restaurant');
+    return store.getAll();
 
-    })
+  })
 }
-
-
-
-
 
 
   /**

@@ -6,20 +6,43 @@
 class DBHelper {
 
 
-  /* Get reviews */
-
-
-
-
   /**
    * Database URL.
    * Change this to restaurants.json file location on your server.
    */
   static get DATABASE_URL() {
     const port = 1337 // Change this to your server port
-    return `http://localhost:${port}/restaurants`;
+    return `http://localhost:${port}/restaurants/`;
   }
 
+  static get DATABASE_URL_REVIEWS(){
+    const port = 1337 // Change this to your server port
+    return `http://localhost:${port}/reviews/`;
+  }
+
+
+
+
+  static getReviews(id, callback){
+    fetch(DBHelper.DATABASE_URL_REVIEWS+"?restaurant_id="+id).then(response => {
+      if (response.status === 200) {
+        response.json().then(json => {
+          callback(null, json);
+        }).catch(err => {
+          callback(err, null);
+        });
+      }else{
+        //failed
+
+        callback('failed', null);
+      }
+    }).catch(err => {
+      callback(err, null);
+    });
+
+
+
+  }
 
   static openDatabase(){
     /*Check if the browser supports services workers*/

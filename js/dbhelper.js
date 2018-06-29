@@ -20,7 +20,15 @@ class DBHelper {
     return `http://localhost:${port}/reviews/`;
   }
 
-
+  static getFormattedDate(unformattedDate){
+    var dateString = "";
+    var date = new Date(unformattedDate);
+    var months = ["January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    dateString += months[date.getMonth()]+" ";
+    dateString += date.getDate()+", ";
+    dateString += date.getFullYear();
+    return dateString;
+  }
 
 
   static getReviews(id, callback){

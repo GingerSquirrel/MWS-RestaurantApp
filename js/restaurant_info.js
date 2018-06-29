@@ -174,8 +174,9 @@ createReviewHTML = (review) => {
 
 
   const name = document.createElement('div');
+
   name.className = "review-top";
-  name.innerHTML = "<span class='review-name'>"+review.name+"</span><span class='review-date'>"+review.date+"</span>";
+  name.innerHTML = "<span class='review-name'>"+review.name+"</span><span class='review-date'>"+DBHelper.getFormattedDate(review.createdAt)+"</span>";
   div.appendChild(name);
 
   /*
@@ -277,31 +278,19 @@ function sendReview(event){
   event.preventDefault();
   console.log("send review function run");
 
-  /*
-  var dateString = "";
-  var today = new Date();
-  var months = ["January", "Februrary", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
-  dateString += months[today.getMonth()]+" ";
-  dateString += today.getDate()+", ";
-  dateString += today.getFullYear();
-  */
-
-
-
-  const name = document.getElementById("reviewFormName");
+  const name = document.getElementById("reviewFormName").value
   const rating = document.getElementById("reviewFormRating").value;
-  const review = document.getElementById("reviewFormReview");
-  //const date = dateString; // Not needed :(
+  const review = document.getElementById("reviewFormReview").value;
   const id = self.restaurant.id;
+  const time = Date.now();
 
   const reviewObj = {
-    restaurant_id: id,
-    name: name,
-    rating: rating,
-    comments: review
+    "restaurant_id": id,
+    "name": name,
+    "rating": rating,
+    "comments": review,
+    "createdAt": time
   }
-
-  console.log("review obj" + reviewObj);
 
   if(navigator.onLine){
     fetch("http://localhost:1337/reviews/", {
@@ -314,7 +303,14 @@ function sendReview(event){
       response.json
     }).catch((error) => {
       console.log('error adding review: ' + error);
-    }).then(response => console.log('Review added'));
+    }).then(response => {
+      console.log('Review added')
+
+      const ul = document.getElementById('reviews-list');
+      ul.appendChild(createReviewHTML(reviewObj));
+      container.appendChild(ul);
+
+    });
   }
 
 }

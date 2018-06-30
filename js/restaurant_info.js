@@ -70,13 +70,15 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const fave = document.getElementById('fave-button');
   fave.setAttribute('data-toggle', restaurant.is_favorite);
 
+
+
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
   const image = document.getElementById('restaurant-img');
   //image.alt = restaurant.alt;
 
-    image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  image.src = DBHelper.imageUrlForRestaurant(restaurant);
 
   if(image.src.endsWith('/img/0.jpg')){
     image.alt = "Awaiting photograph of restaurant";
@@ -94,6 +96,59 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   // fill reviews
   fillReviewsHTML();
 }
+
+
+
+toggleFaveButton = () => {
+  var buttonData = document.getElementById('fave-button').getAttribute('data-toggle');
+
+
+
+
+    if(buttonData == "true"){
+      //button data is true
+
+
+    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=false", {
+      method: 'PUT',
+    }).then(response => {
+      response.json
+    }).catch((error) => {
+      console.log('error adding fave: ' + error);
+    }).then(response => {
+      console.log('Fave removed')
+      document.getElementById('fave-button').setAttribute('data-toggle', 'false');
+      DBHelper.getFromWeb();
+    });
+
+
+
+
+
+    }else{
+      //button data is false
+
+
+
+    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=true", {
+      method: 'PUT',
+    }).then(response => {
+      response.json
+    }).catch((error) => {
+      console.log('error adding fave: ' + error);
+    }).then(response => {
+      console.log('Fave added')
+      document.getElementById('fave-button').setAttribute('data-toggle', 'true');
+      DBHelper.getFromWeb();
+    });
+
+
+
+
+  }
+}
+
+
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -118,11 +173,6 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-
-
-
-
-
 
 fillReviewsHTML = () => {
   const container = document.getElementById('reviews-container');
@@ -170,8 +220,6 @@ createReviewHTML = (review) => {
   li.className = "review-item";
   const div = document.createElement('div')
   div.className = "review-inner";
-
-
 
   const name = document.createElement('div');
 
@@ -308,9 +356,13 @@ function sendReview(event){
 
       const ul = document.getElementById('reviews-list');
       ul.appendChild(createReviewHTML(reviewObj));
-      container.appendChild(ul);
+
+
+      document.getElementById('add-review').innerHTML = "Thank-you!";
 
     });
+  }else{
+    console.log("Offline need to set caching");
   }
 
 }

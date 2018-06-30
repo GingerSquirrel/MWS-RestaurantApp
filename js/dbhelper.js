@@ -20,6 +20,7 @@ class DBHelper {
     return `http://localhost:${port}/reviews/`;
   }
 
+
   static getFormattedDate(unformattedDate){
     var dateString = "";
     var date = new Date(unformattedDate);
@@ -66,6 +67,10 @@ class DBHelper {
     })
 
   }
+
+
+
+
 
 static saveToDatabase(messages){
   return DBHelper.openDatabase().then(function(db){

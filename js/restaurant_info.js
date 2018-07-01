@@ -12,8 +12,6 @@ setMapTitle = () => {
 
 };
 
-
-
 window.initMap = () => {
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
@@ -64,13 +62,15 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+
+
+
+
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
   const fave = document.getElementById('fave-button');
   fave.setAttribute('data-toggle', restaurant.is_favorite);
-
-
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
@@ -102,53 +102,37 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 toggleFaveButton = () => {
   var buttonData = document.getElementById('fave-button').getAttribute('data-toggle');
 
-
-
-
     if(buttonData == "true"){
       //button data is true
 
-
-    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=false", {
-      method: 'PUT',
-    }).then(response => {
-      response.json
-    }).catch((error) => {
-      console.log('error adding fave: ' + error);
-    }).then(response => {
-      console.log('Fave removed')
-      document.getElementById('fave-button').setAttribute('data-toggle', 'false');
-      DBHelper.getFromWeb();
-    });
-
-
-
-
+      fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=false", {
+        method: 'PUT',
+      }).then(response => {
+        response.json
+      }).catch((error) => {
+        console.log('error adding fave: ' + error);
+      }).then(response => {
+        console.log('Fave removed')
+        document.getElementById('fave-button').setAttribute('data-toggle', 'false');
+        DBHelper.getFromWeb();
+      });
 
     }else{
       //button data is false
 
-
-
-    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=true", {
-      method: 'PUT',
-    }).then(response => {
-      response.json
-    }).catch((error) => {
-      console.log('error adding fave: ' + error);
-    }).then(response => {
-      console.log('Fave added')
-      document.getElementById('fave-button').setAttribute('data-toggle', 'true');
-      DBHelper.getFromWeb();
-    });
-
-
-
-
+      fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=true", {
+        method: 'PUT',
+      }).then(response => {
+        response.json
+      }).catch((error) => {
+        console.log('error adding fave: ' + error);
+      }).then(response => {
+        console.log('Fave added')
+        document.getElementById('fave-button').setAttribute('data-toggle', 'true');
+        DBHelper.getFromWeb();
+      });
   }
 }
-
-
 
 /**
  * Create restaurant operating hours HTML table and add it to the webpage.
@@ -175,13 +159,18 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
  */
 
 fillReviewsHTML = () => {
+
+
+
+  DBHelper.getReviewsFromWebId(self.restaurant.id);
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
 
-  DBHelper.getReviews(self.restaurant.id, (err, reviews) => {
 
+  //DBHelper.getReviews(self.restaurant.id, (err, reviews) => {
+  DBHelper.fetchReviewsByRestaurantId(self.restaurant.id, (err, reviews) => {
   if (!reviews || err) {
     const noReviews = document.createElement('p');
     noReviews.innerHTML = 'No reviews yet!';
@@ -197,25 +186,16 @@ fillReviewsHTML = () => {
   container.appendChild(ul);
 
   createReviewSubmissionForm();
-
-
-
   })
-
-
-
-
-
-
-
-
-
 }
 
 /**
  * Create review HTML and add it to the webpage.
  */
 createReviewHTML = (review) => {
+
+  let date = review.createdAt != undefined ? DBHelper.getFormattedDate(review.createdAt) : "Just added!";
+
   const li = document.createElement('li');
   li.className = "review-item";
   const div = document.createElement('div')
@@ -224,7 +204,7 @@ createReviewHTML = (review) => {
   const name = document.createElement('div');
 
   name.className = "review-top";
-  name.innerHTML = "<span class='review-name'>"+review.name+"</span><span class='review-date'>"+DBHelper.getFormattedDate(review.createdAt)+"</span>";
+  name.innerHTML = "<span class='review-name'>"+review.name+"</span><span class='review-date'>"+date+"</span>";
   div.appendChild(name);
 
   /*
@@ -321,7 +301,6 @@ createReviewSubmissionForm = () => {
   formDiv.appendChild(form);
 }
 
-
 function sendReview(event){
   event.preventDefault();
   console.log("send review function run");
@@ -330,17 +309,15 @@ function sendReview(event){
   const rating = document.getElementById("reviewFormRating").value;
   const review = document.getElementById("reviewFormReview").value;
   const id = self.restaurant.id;
-  const time = Date.now();
+  //const time = Date.now();
 
   const reviewObj = {
     "restaurant_id": id,
     "name": name,
     "rating": rating,
-    "comments": review,
-    "createdAt": time
+    "comments": review
   }
 
-  if(navigator.onLine){
     fetch("http://localhost:1337/reviews/", {
       method: 'POST',
       body: JSON.stringify(reviewObj),
@@ -352,18 +329,15 @@ function sendReview(event){
     }).catch((error) => {
       console.log('error adding review: ' + error);
     }).then(response => {
-      console.log('Review added')
-
+      console.log('Review added');
+      console.log(reviewObj);
       const ul = document.getElementById('reviews-list');
       ul.appendChild(createReviewHTML(reviewObj));
 
-
+      DBHelper.getReviewsFromWebId(self.restaurant.id);
       document.getElementById('add-review').innerHTML = "Thank-you!";
 
     });
-  }else{
-    console.log("Offline need to set caching");
-  }
 
 }
 

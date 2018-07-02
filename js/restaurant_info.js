@@ -63,9 +63,6 @@ fetchRestaurantFromURL = (callback) => {
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
 
-
-
-
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -161,7 +158,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 fillReviewsHTML = () => {
 
 
-
+  DBHelper.moveCachedReviewsToServer();
   DBHelper.getReviewsFromWebId(self.restaurant.id);
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
@@ -318,6 +315,8 @@ function sendReview(event){
     "comments": review
   }
 
+if(navigator.onLine){
+
     fetch("http://localhost:1337/reviews/", {
       method: 'POST',
       body: JSON.stringify(reviewObj),
@@ -338,6 +337,21 @@ function sendReview(event){
       document.getElementById('add-review').innerHTML = "Thank-you!";
 
     });
+
+
+
+   }else{
+     console.log("add offline cache");
+
+     DBHelper.cacheReviewToDatabase([reviewObj]);
+
+     document.getElementById('add-review').innerHTML = "Thank-you! Your review will be uploaded next time you go online.";
+
+
+
+   }
+
+
 
 }
 

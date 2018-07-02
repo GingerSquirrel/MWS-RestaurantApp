@@ -31,7 +31,7 @@ class DBHelper {
     return dateString;
   }
 
-
+  /* not used? */
   static getReviews(id, callback){
     fetch(DBHelper.DATABASE_URL_REVIEWS+"?restaurant_id="+id).then(response => {
       if (response.status === 200) {
@@ -51,8 +51,94 @@ class DBHelper {
   }
 
 
+
+
+
+
+
+
+
+  /**
+  **/
+
+
+  static moveCachedReviewsToServer(){
+    //check that there are some reviews
+    DBHelper.getCachedReviewDataFromDatabase().then(reviews => {
+      if(reviews.length) {
+        //there are reviews
+        fetch("http://localhost:1337/reviews/", {
+      method: 'POST',
+      body: JSON.stringify(reviews),
+      headers: {
+        'content-type': 'application/json'
+      }
+    })
+        idb.delete('restaurant-reviews-cache');
+      } else {
+        //no reviews
+      }
+    })
+
+
+    //If they are there post them
+
+  }
+
+
+  static getCachedReviewDataFromDatabase(){
+  return DBHelper.openReviewsDatabaseCache().then(function(db){
+  if(!db){
+     return;
+     }
+
+    var store = db.transaction('reviews').objectStore('reviews');
+    return store.getAll();
+
+  })
+}
+
+
+
+
+    static openReviewsDatabaseCache(){
+    /*Check if the browser supports services workers*/
+      if (!navigator.serviceWorker) {
+        return Promise.resolve();
+      }
+    /* Create idb */
+     return idb.open('restaurant-reviews-cache', 1, upgradeDb => {
+        var store = upgradeDb.createObjectStore('reviews', {
+          keyPath: 'restaurant_id'
+      });
+      store.createIndex('by-id', 'restaurant_id');
+    })
+
+  }
+
+    static cacheReviewToDatabase(messages){
+    return DBHelper.openReviewsDatabaseCache().then(function(db){
+      if(!db){
+         return;
+         }
+
+          var tx = db.transaction('reviews', 'readwrite');
+          var store = tx.objectStore('reviews');
+          messages.forEach(function(message){
+            store.put(message);
+          });
+
+      return tx.complete;
+    })
+  }
+
+
+
   /***
   ***/
+
+
+
 
 
   static fetchReviewsByRestaurantId(id, callback) {
@@ -110,8 +196,9 @@ class DBHelper {
       });
       store.createIndex('by-id', 'id');
     })
+    }
 
-  }
+
 
     static getReviewsFromWeb(){
         return fetch(DBHelper.DATABASE_URL_REVIEWS)
@@ -148,7 +235,6 @@ class DBHelper {
     return tx.complete;
   })
 }
-
 
 
 

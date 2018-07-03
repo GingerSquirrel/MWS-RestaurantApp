@@ -62,7 +62,7 @@ class DBHelper {
   **/
 
 
-  static moveCachedReviewsToServer(){
+  static moveCachedReviewsToServer(callback){
     //check that there are some reviews
     DBHelper.getCachedReviewDataFromDatabase().then(reviews => {
       if(reviews.length) {
@@ -73,10 +73,17 @@ class DBHelper {
       headers: {
         'content-type': 'application/json'
       }
-    })
-        idb.delete('restaurant-reviews-cache');
+    }).then(reviews => {
+      idb.delete('restaurant-reviews-cache');
+      callback(null, true);
+    }).catch(error => {
+      callback(error, null);
+    });
+
       } else {
+
         //no reviews
+        callback(null, true);
       }
     })
 
@@ -440,13 +447,18 @@ class DBHelper {
   static imageUrlForRestaurant(restaurant) {
 
     if(restaurant.photograph == undefined){
-       return (`/img/0.jpg`);
+       return (`/img/0.webp`);
        }
 
 
 
-    return (`/img/${restaurant.photograph}.jpg`);
+    return (`/img/${restaurant.photograph}.webp`);
   }
+
+
+
+
+
 
   /**
    * Map marker for a restaurant.

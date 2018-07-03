@@ -3,7 +3,8 @@
 
 <head>
   <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" />
-  <link rel="stylesheet" href="css/styles.css">
+
+  <link rel="stylesheet" href="css/styles.min.css">
   <link rel="manifest" href="/manifest.json">
   <title>Restaurant Reviews</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -18,9 +19,25 @@
   </header>
 
   <main id="maincontent">
+
     <section id="map-container" role="application">
-      <div id="map"></div>
+
+
+
+
+
+
+
+
+      <!--<div id="map" style="display: none;"></div>-->
     </section>
+
+
+
+
+
+
+
     <section>
       <div class="filter-options">
         <h2 tabindex="-1">Filter Results</h2>
@@ -38,8 +55,15 @@
   <script src="js/idb.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initMap"></script>
 
+  <!--<script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initMap"></script>  -->
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places"></script>
+
+
+  <script>
+
+
+  </script>
 
   <footer id="footer">
     Copyright (c) 2017 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.

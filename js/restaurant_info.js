@@ -158,8 +158,12 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 fillReviewsHTML = () => {
 
 
-  DBHelper.moveCachedReviewsToServer();
-  DBHelper.getReviewsFromWebId(self.restaurant.id);
+  DBHelper.moveCachedReviewsToServer((err, done) => {
+    if(done){
+        DBHelper.getReviewsFromWebId(self.restaurant.id);
+       }
+  });
+
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';

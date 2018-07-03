@@ -14,6 +14,8 @@ document.addEventListener('DOMContentLoaded', (event) => {
  DBHelper.serviceWorker();
   fetchNeighborhoods();
   fetchCuisines();
+    updateRestaurants();
+
 });
 
 /**
@@ -94,7 +96,6 @@ window.initMap = () => {
     center: loc,
     scrollwheel: false
   });
-  updateRestaurants();
   self.map.addListener('tilesloaded', setMapTitle);
 }
 
@@ -117,6 +118,7 @@ updateRestaurants = () => {
     } else {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
+      loadStaticMap();
     }
   })
 }
@@ -144,7 +146,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
     ul.append(createRestaurantHTML(restaurant));
   });
-  addMarkersToMap();
+  //addMarkersToMap();
 }
 
 /**
@@ -156,12 +158,16 @@ createRestaurantHTML = (restaurant) => {
 
 
   const image = document.createElement('img');
-  image.className = 'restaurant-img';
+  image.className = 'lozad restaurant-img';
+
   //image.alt = restaurant.alt;
 
   image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  //image.setAttribute("data-src", DBHelper.imageUrlForRestaurant(restaurant));
 
-  if(image.src.endsWith('/img/0.jpg')){
+
+
+  if(image.src.endsWith('/img/0.webp')){
     image.alt = "Awaiting photograph of restaurant";
   }else{
     image.alt = "A photograph of the Restaurant";
@@ -205,4 +211,38 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 }
 
+
+
+loadMap = () => {
+  console.log("map load function run");
+
+  var element = document.createElement("div");
+  element.id = "map";
+
+  document.getElementById("map-container").appendChild(element);
+
+  initMap();
+  addMarkersToMap();
+}
+
+
+loadStaticMap = (restaurants = self.restaurants) => {
+  var map = document.getElementById('map-container');
+  map.setAttribute('onclick', 'loadMap();');
+
+  var url = "https://maps.googleapis.com/maps/api/staticmap?"
+  //+"center=Brooklyn+Bridge,New+York,NY"
+  +"&zoom=11"
+  +"&size=600x300"
+  +"&maptype=roadmap"
+
+  restaurants.forEach(restaurant => {
+    url += `&markers=color:red%7C${restaurant.latlng.lat},${restaurant.latlng.lng}`;
+  });
+
+  url += "&key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI";
+  map.setAttribute("style", "background-image:url("+url+"); background-size: cover; background-position:center;");
+
+
+}
 

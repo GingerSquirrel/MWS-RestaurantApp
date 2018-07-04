@@ -97,6 +97,7 @@ window.initMap = () => {
     scrollwheel: false
   });
   self.map.addListener('tilesloaded', setMapTitle);
+    addMarkersToMap();
 }
 
 /**
@@ -216,13 +217,19 @@ addMarkersToMap = (restaurants = self.restaurants) => {
 loadMap = () => {
   console.log("map load function run");
 
+
+  var tag = document.createElement("script");
+tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initMap";
+document.getElementsByTagName("body")[0].appendChild(tag);
+
+
   var element = document.createElement("div");
   element.id = "map";
 
   document.getElementById("map-container").appendChild(element);
 
-  initMap();
-  addMarkersToMap();
+  //initMap();
+
 }
 
 

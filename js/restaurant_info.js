@@ -1,6 +1,15 @@
 let restaurant;
 var map;
 
+
+document.addEventListener('DOMContentLoaded', (event) => {
+ //DBHelper.serviceWorker();
+  fetchRestaurantFromURL();
+
+
+})
+
+
 /**
  * Initialize Google map, called from HTML.
  */
@@ -12,48 +21,87 @@ setMapTitle = () => {
 
 };
 
-window.initMap = () => {
-  fetchRestaurantFromURL((error, restaurant) => {
-    if (error) { // Got an error!
-      console.error(error);
-    } else {
+window.initRestMap = () => {
+  console.log(self.restaurant.latlng.lat);
+
+
       self.map = new google.maps.Map(document.getElementById('map'), {
         zoom: 16,
-        center: restaurant.latlng,
+        center: self.restaurant.latlng,
         scrollwheel: false
       });
-      fillBreadcrumb();
+
       DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
 
-        self.map.addListener('tilesloaded', setMapTitle);
-
-    }
-  });
+      self.map.addListener('tilesloaded', setMapTitle);
 
 }
+
+
+loadStaticMap = (restaurant = self.restaurant) => {
+  var map = document.getElementById('map-container');
+  map.setAttribute('onclick', 'loadMap();');
+
+  var url = "https://maps.googleapis.com/maps/api/staticmap?"
+  //+"center=Brooklyn+Bridge,New+York,NY"
+  +"&zoom=11"
+  +"&size=600x300"
+  +"&maptype=roadmap";
+
+
+    url += `&markers=color:red%7C${restaurant.latlng.lat},${restaurant.latlng.lng}`;
+
+  url += "&key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI";
+  map.setAttribute("style", "background-image:url("+url+"); background-size: cover; background-position:center;");
+}
+
+loadMap = () => {
+  console.log("map load function run");
+
+
+  var tag = document.createElement("script");
+tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initRestMap";
+document.getElementsByTagName("body")[0].appendChild(tag);
+
+
+  var element = document.createElement("div");
+  element.id = "map";
+
+  document.getElementById("map-container").appendChild(element);
+
+  //initMap();
+
+}
+
+
+
+
+
+
 
 
 /**
  * Get current restaurant from page URL.
  */
-fetchRestaurantFromURL = (callback) => {
+fetchRestaurantFromURL = () => {
+
   if (self.restaurant) { // restaurant already fetched!
     callback(null, self.restaurant)
     return;
   }
   const id = getParameterByName('id');
   if (!id) { // no id found in URL
-    error = 'No restaurant id in URL'
-    callback(error, null);
+    console.log("error getting restaurant")
   } else {
     DBHelper.fetchRestaurantById(id, (error, restaurant) => {
       self.restaurant = restaurant;
       if (!restaurant) {
-        console.error(error);
+        console.log(error);
         return;
       }
+      fillBreadcrumb();
       fillRestaurantHTML();
-      callback(null, restaurant)
+      loadStaticMap();
     });
   }
 }

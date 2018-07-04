@@ -170,6 +170,7 @@ class DBHelper {
       if(reviews.length) {
         return Promise.resolve(reviews);
       } else {
+        // add in get reviews ID too, below funciton only gets first 6
         return DBHelper.getReviewsFromWeb();
       }
     }).then(reviews => {

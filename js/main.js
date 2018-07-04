@@ -11,10 +11,10 @@ var markers = []
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 document.addEventListener('DOMContentLoaded', (event) => {
- DBHelper.serviceWorker();
+  DBHelper.serviceWorker();
   fetchNeighborhoods();
   fetchCuisines();
-    updateRestaurants();
+  updateRestaurants();
 
 });
 
@@ -120,6 +120,8 @@ updateRestaurants = () => {
       resetRestaurants(restaurants);
       fillRestaurantsHTML();
       loadStaticMap();
+      //added in needs testing
+      addMarkersToMap();
     }
   })
 }

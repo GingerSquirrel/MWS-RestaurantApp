@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
   fetchNeighborhoods();
   fetchCuisines();
   updateRestaurants();
-
 });
 
 /**
@@ -81,7 +80,6 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
 setMapTitle = () => {
   const mapFrame = document.querySelector('#map').querySelector('iframe');
   mapFrame.setAttribute('title', 'Google map showing the locations of all the restaurants');
-
 };
 
 
@@ -97,7 +95,7 @@ window.initMap = () => {
     scrollwheel: false
   });
   self.map.addListener('tilesloaded', setMapTitle);
-    addMarkersToMap();
+  addMarkersToMap();
 }
 
 /**
@@ -214,26 +212,15 @@ addMarkersToMap = (restaurants = self.restaurants) => {
   });
 }
 
-
-
 loadMap = () => {
-  console.log("map load function run");
-
-
   var tag = document.createElement("script");
-tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initMap";
-document.getElementsByTagName("body")[0].appendChild(tag);
+  tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initMap";
 
-
+  document.getElementsByTagName("body")[0].appendChild(tag);
   var element = document.createElement("div");
   element.id = "map";
-
   document.getElementById("map-container").appendChild(element);
-
-  //initMap();
-
 }
-
 
 loadStaticMap = (restaurants = self.restaurants) => {
   var map = document.getElementById('map-container');
@@ -251,7 +238,5 @@ loadStaticMap = (restaurants = self.restaurants) => {
 
   url += "&key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI";
   map.setAttribute("style", "background-image:url("+url+"); background-size: cover; background-position:center;");
-
-
 }
 

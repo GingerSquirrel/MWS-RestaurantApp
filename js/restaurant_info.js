@@ -3,18 +3,14 @@ var map;
 
 
 document.addEventListener('DOMContentLoaded', (event) => {
- //DBHelper.serviceWorker();
+  DBHelper.serviceWorker();
   fetchRestaurantFromURL();
-
-
 })
 
 
 /**
  * Initialize Google map, called from HTML.
  */
-
-
 setMapTitle = () => {
   const mapFrame = document.querySelector('#map').querySelector('iframe');
   mapFrame.setAttribute('title', 'Google map showing the location of this restaurant');
@@ -22,19 +18,14 @@ setMapTitle = () => {
 };
 
 window.initRestMap = () => {
-  console.log(self.restaurant.latlng.lat);
+  self.map = new google.maps.Map(document.getElementById('map'), {
+    zoom: 16,
+    center: self.restaurant.latlng,
+    scrollwheel: false
+  });
 
-
-      self.map = new google.maps.Map(document.getElementById('map'), {
-        zoom: 16,
-        center: self.restaurant.latlng,
-        scrollwheel: false
-      });
-
-      DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
-
-      self.map.addListener('tilesloaded', setMapTitle);
-
+  DBHelper.mapMarkerForRestaurant(self.restaurant, self.map);
+  self.map.addListener('tilesloaded', setMapTitle);
 }
 
 
@@ -47,38 +38,20 @@ loadStaticMap = (restaurant = self.restaurant) => {
   +"&zoom=11"
   +"&size=600x300"
   +"&maptype=roadmap";
-
-
-    url += `&markers=color:red%7C${restaurant.latlng.lat},${restaurant.latlng.lng}`;
-
+  url += `&markers=color:red%7C${restaurant.latlng.lat},${restaurant.latlng.lng}`;
   url += "&key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI";
   map.setAttribute("style", "background-image:url("+url+"); background-size: cover; background-position:center;");
 }
 
 loadMap = () => {
-  console.log("map load function run");
-
-
   var tag = document.createElement("script");
-tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initRestMap";
-document.getElementsByTagName("body")[0].appendChild(tag);
-
+  tag.src = "https://maps.googleapis.com/maps/api/js?key=AIzaSyC89Xoq-j_tvlTwr_T6772k0DvAi0aEvpI&libraries=places&callback=initRestMap";
+  document.getElementsByTagName("body")[0].appendChild(tag);
 
   var element = document.createElement("div");
   element.id = "map";
-
   document.getElementById("map-container").appendChild(element);
-
-  //initMap();
-
 }
-
-
-
-
-
-
-
 
 /**
  * Get current restaurant from page URL.
@@ -146,36 +119,35 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 toggleFaveButton = () => {
   var buttonData = document.getElementById('fave-button').getAttribute('data-toggle');
+  if(buttonData == "true"){
+    //button data is true
 
-    if(buttonData == "true"){
-      //button data is true
+    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=false", {
+      method: 'PUT',
+    }).then(response => {
+      response.json
+    }).catch((error) => {
+      console.log('error adding fave: ' + error);
+    }).then(response => {
+      console.log('Fave removed')
+      document.getElementById('fave-button').setAttribute('data-toggle', 'false');
+      DBHelper.getFromWeb();
+    });
 
-      fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=false", {
-        method: 'PUT',
-      }).then(response => {
-        response.json
-      }).catch((error) => {
-        console.log('error adding fave: ' + error);
-      }).then(response => {
-        console.log('Fave removed')
-        document.getElementById('fave-button').setAttribute('data-toggle', 'false');
-        DBHelper.getFromWeb();
-      });
+  }else{
+    //button data is false
 
-    }else{
-      //button data is false
-
-      fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=true", {
-        method: 'PUT',
-      }).then(response => {
-        response.json
-      }).catch((error) => {
-        console.log('error adding fave: ' + error);
-      }).then(response => {
-        console.log('Fave added')
-        document.getElementById('fave-button').setAttribute('data-toggle', 'true');
-        DBHelper.getFromWeb();
-      });
+    fetch("http://localhost:1337/restaurants/"+self.restaurant.id+"/?is_favorite=true", {
+      method: 'PUT',
+    }).then(response => {
+      response.json
+    }).catch((error) => {
+      console.log('error adding fave: ' + error);
+    }).then(response => {
+      console.log('Fave added')
+      document.getElementById('fave-button').setAttribute('data-toggle', 'true');
+      DBHelper.getFromWeb();
+    });
   }
 }
 
@@ -208,8 +180,8 @@ fillReviewsHTML = () => {
 
   DBHelper.moveCachedReviewsToServer((err, done) => {
     if(done){
-        DBHelper.getReviewsFromWebId(self.restaurant.id);
-       }
+      DBHelper.getReviewsFromWebId(self.restaurant.id);
+    }
   });
 
   const container = document.getElementById('reviews-container');
@@ -307,7 +279,7 @@ createReviewSubmissionForm = () => {
 
   /* fields here */
   const nameLabel = document.createElement('label');
-  nameLabel.htmlFor = "name";
+  nameLabel.htmlFor = "reviewFormName";
   nameLabel.innerHTML = "Name";
   form.append(nameLabel);
 
@@ -318,7 +290,7 @@ createReviewSubmissionForm = () => {
   form.append(name);
 
   const labelRating = document.createElement('label');
-  labelRating.htmlFor = "rating";
+  labelRating.htmlFor = "reviewFormRating";
   labelRating.innerHTML = "Star Rating";
   form.append(labelRating);
 
@@ -333,7 +305,7 @@ createReviewSubmissionForm = () => {
   form.append(rating);
 
   const reviewLabel = document.createElement('label');
-  reviewLabel.htmlFor = "review";
+  reviewLabel.htmlFor = "reviewFormReview";
   reviewLabel.innerHTML = "Review: ";
   form.append(reviewLabel);
 
@@ -369,41 +341,32 @@ function sendReview(event){
 
 if(navigator.onLine){
 
-    fetch("http://localhost:1337/reviews/", {
-      method: 'POST',
-      body: JSON.stringify(reviewObj),
-      headers: {
-        'content-type': 'application/json'
-      }
-    }).then(response => {
-      response.json
-    }).catch((error) => {
-      console.log('error adding review: ' + error);
-    }).then(response => {
-      console.log('Review added');
-      console.log(reviewObj);
-      const ul = document.getElementById('reviews-list');
-      ul.appendChild(createReviewHTML(reviewObj));
+  fetch("http://localhost:1337/reviews/", {
+    method: 'POST',
+    body: JSON.stringify(reviewObj),
+    headers: {
+      'content-type': 'application/json'
+    }
+  }).then(response => {
+    response.json
+  }).catch((error) => {
+    console.log('error adding review: ' + error);
+  }).then(response => {
+    console.log('Review added');
+    console.log(reviewObj);
+    const ul = document.getElementById('reviews-list');
+    ul.appendChild(createReviewHTML(reviewObj));
 
-      DBHelper.getReviewsFromWebId(self.restaurant.id);
-      document.getElementById('add-review').innerHTML = "Thank-you!";
+    DBHelper.getReviewsFromWebId(self.restaurant.id);
+    document.getElementById('add-review').innerHTML = "Thank-you!";
 
-    });
+  });
+}else{
+   console.log("add offline cache");
 
+   DBHelper.cacheReviewToDatabase([reviewObj]);
 
-
-   }else{
-     console.log("add offline cache");
-
-     DBHelper.cacheReviewToDatabase([reviewObj]);
-
-     document.getElementById('add-review').innerHTML = "Thank-you! Your review will be uploaded next time you go online.";
-
-
-
+   document.getElementById('add-review').innerHTML = "Thank-you! Your review will be uploaded next time you go online.";
    }
-
-
-
 }
 

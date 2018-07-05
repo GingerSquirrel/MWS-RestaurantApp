@@ -31,36 +31,6 @@ class DBHelper {
     return dateString;
   }
 
-  /* not used? */
-  static getReviews(id, callback){
-    fetch(DBHelper.DATABASE_URL_REVIEWS+"?restaurant_id="+id).then(response => {
-      if (response.status === 200) {
-        response.json().then(json => {
-          callback(null, json);
-        }).catch(err => {
-          callback(err, null);
-        });
-      }else{
-        //failed
-
-        callback('failed', null);
-      }
-    }).catch(err => {
-      callback(err, null);
-    });
-  }
-
-
-
-
-
-
-
-
-
-  /**
-  **/
-
 
   static moveCachedReviewsToServer(callback){
     //check that there are some reviews
@@ -68,42 +38,37 @@ class DBHelper {
       if(reviews.length) {
         //there are reviews
         fetch("http://localhost:1337/reviews/", {
-      method: 'POST',
-      body: JSON.stringify(reviews),
-      headers: {
-        'content-type': 'application/json'
-      }
-    }).then(reviews => {
-      idb.delete('restaurant-reviews-cache');
-      callback(null, true);
-    }).catch(error => {
-      callback(error, null);
-    });
+        method: 'POST',
+        body: JSON.stringify(reviews),
+        headers: {
+          'content-type': 'application/json'
+          }
+        }).then(reviews => {
+          idb.delete('restaurant-reviews-cache');
+          callback(null, true);
+        }).catch(error => {
+          callback(error, null);
+        });
 
       } else {
-
         //no reviews
         callback(null, true);
       }
     })
-
-
-    //If they are there post them
-
   }
 
 
   static getCachedReviewDataFromDatabase(){
-  return DBHelper.openReviewsDatabaseCache().then(function(db){
-  if(!db){
-     return;
-     }
+    return DBHelper.openReviewsDatabaseCache().then(function(db){
+    if(!db){
+       return;
+       }
 
-    var store = db.transaction('reviews').objectStore('reviews');
-    return store.getAll();
+      var store = db.transaction('reviews').objectStore('reviews');
+      return store.getAll();
 
-  })
-}
+    })
+  }
 
 
 
@@ -123,29 +88,20 @@ class DBHelper {
 
   }
 
-    static cacheReviewToDatabase(messages){
+  static cacheReviewToDatabase(messages){
     return DBHelper.openReviewsDatabaseCache().then(function(db){
       if(!db){
-         return;
-         }
+        return;
+      }
 
-          var tx = db.transaction('reviews', 'readwrite');
-          var store = tx.objectStore('reviews');
-          messages.forEach(function(message){
-            store.put(message);
-          });
-
+      var tx = db.transaction('reviews', 'readwrite');
+      var store = tx.objectStore('reviews');
+      messages.forEach(function(message){
+        store.put(message);
+      });
       return tx.complete;
     })
   }
-
-
-
-  /***
-  ***/
-
-
-
 
 
   static fetchReviewsByRestaurantId(id, callback) {
@@ -170,6 +126,7 @@ class DBHelper {
       if(reviews.length) {
         return Promise.resolve(reviews);
       } else {
+
         // add in get reviews ID too, below funciton only gets first 6
         return DBHelper.getReviewsFromWeb();
       }
@@ -181,77 +138,67 @@ class DBHelper {
   }
 
   static getReviewDataFromDatabase(){
-  return DBHelper.openReviewsDatabase().then(function(db){
-  if(!db){
-     return;
-     }
+    return DBHelper.openReviewsDatabase().then(function(db){
+    if(!db){
+       return;
+       }
 
-    var store = db.transaction('reviews').objectStore('reviews');
-    return store.getAll();
+      var store = db.transaction('reviews').objectStore('reviews');
+      return store.getAll();
 
-  })
-}
+    })
+  }
 
-    static openReviewsDatabase(){
+  static openReviewsDatabase(){
     /*Check if the browser supports services workers*/
-      if (!navigator.serviceWorker) {
-        return Promise.resolve();
-      }
+    if (!navigator.serviceWorker) {
+      return Promise.resolve();
+    }
     /* Create idb */
-     return idb.open('restaurant-reviews2', 1, upgradeDb => {
-        var store = upgradeDb.createObjectStore('reviews', {
-          keyPath: 'id'
+    return idb.open('restaurant-reviews2', 1, upgradeDb => {
+      var store = upgradeDb.createObjectStore('reviews', {
+        keyPath: 'id'
       });
       store.createIndex('by-id', 'id');
     })
-    }
-
-
-
-    static getReviewsFromWeb(){
-        return fetch(DBHelper.DATABASE_URL_REVIEWS)
-      .then(function(response){
-        return response.json();
-      }).then(reviews => {
-        DBHelper.saveToReviewsDatabase(reviews);
-        return reviews;
-      });
   }
 
-      static getReviewsFromWebId(id){
-        return fetch(DBHelper.DATABASE_URL_REVIEWS+"?restaurant_id="+id)
-      .then(function(response){
-        return response.json();
-      }).then(reviews => {
-        DBHelper.saveToReviewsDatabase(reviews);
-        return reviews;
-      });
+  static getReviewsFromWeb(){
+    return fetch(DBHelper.DATABASE_URL_REVIEWS)
+    .then(function(response){
+      return response.json();
+    }).then(reviews => {
+      DBHelper.saveToReviewsDatabase(reviews);
+      return reviews;
+    });
+  }
+
+  static getReviewsFromWebId(id){
+    return fetch(DBHelper.DATABASE_URL_REVIEWS+"?restaurant_id="+id)
+    .then(function(response){
+      return response.json();
+    }).then(reviews => {
+      DBHelper.saveToReviewsDatabase(reviews);
+      return reviews;
+    });
   }
 
   static saveToReviewsDatabase(messages){
   return DBHelper.openReviewsDatabase().then(function(db){
     if(!db){
        return;
-       }
+    }
 
-        var tx = db.transaction('reviews', 'readwrite');
-        var store = tx.objectStore('reviews');
-        messages.forEach(function(message){
-          store.put(message);
-        });
+    var tx = db.transaction('reviews', 'readwrite');
+    var store = tx.objectStore('reviews');
+    messages.forEach(function(message){
+      store.put(message);
+    });
 
     return tx.complete;
   })
 }
 
-
-
-
-
-
-
-  /***
-  ***/
 
   static openDatabase(){
     /*Check if the browser supports services workers*/
@@ -271,40 +218,40 @@ class DBHelper {
   static saveToDatabase(messages){
   return DBHelper.openDatabase().then(function(db){
     if(!db){
-       return;
-       }
+      return;
+    }
 
-        var tx = db.transaction('restaurant', 'readwrite');
-        var store = tx.objectStore('restaurant');
-        messages.forEach(function(message){
-          store.put(message);
-        });
+    var tx = db.transaction('restaurant', 'readwrite');
+    var store = tx.objectStore('restaurant');
+    messages.forEach(function(message){
+      store.put(message);
+    });
 
     return tx.complete;
   })
 }
 
   static getFromWeb(){
-        return fetch(DBHelper.DATABASE_URL)
-      .then(function(response){
-        return response.json();
-      }).then(restaurants => {
-        DBHelper.saveToDatabase(restaurants);
-        return restaurants;
-      });
+    return fetch(DBHelper.DATABASE_URL)
+    .then(function(response){
+      return response.json();
+    }).then(restaurants => {
+      DBHelper.saveToDatabase(restaurants);
+      return restaurants;
+    });
   }
 
   static getDataFromDatabase(){
-  return DBHelper.openDatabase().then(function(db){
-  if(!db){
-     return;
-     }
+    return DBHelper.openDatabase().then(function(db){
+    if(!db){
+       return;
+       }
 
-    var store = db.transaction('restaurant').objectStore('restaurant');
-    return store.getAll();
+      var store = db.transaction('restaurant').objectStore('restaurant');
+      return store.getAll();
 
-  })
-}
+    })
+  }
 
 
   /**
@@ -446,20 +393,11 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant) {
-
     if(restaurant.photograph == undefined){
-       return (`/img/0.webp`);
-       }
-
-
-
+      return (`/img/0.webp`);
+    }
     return (`/img/${restaurant.photograph}.webp`);
   }
-
-
-
-
-
 
   /**
    * Map marker for a restaurant.
